@@ -9,7 +9,7 @@ workflows:
         - signing # Pastikan variabel keystore Anda ada di sini
       # Versi Java yang digunakan (biasanya Java 17 untuk proyek Kotlin terbaru)
       vars:
-        JAVA_VERSION: "17"
+        JAVA_VERSION: "11"
 
     scripts:
       - name: Build Android APK
