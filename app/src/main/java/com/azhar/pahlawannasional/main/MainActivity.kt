@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.azhar.pahlawannasional.R
-import kotlinx.android.synthetic.main.activity_main.*
+import com.azhar.pahlawannasional.databinding.ActivityMainBinding
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -18,19 +18,21 @@ import java.nio.charset.StandardCharsets
 class MainActivity : AppCompatActivity() {
     private var modelMain: MutableList<ModelMain> = ArrayList()
     lateinit var mainAdapter: MainAdapter
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         //transparent background searchview
-        val searchPlateId = searchData.getContext()
+        val searchPlateId = binding.searchData.getContext()
             .resources.getIdentifier("android:id/search_plate", null, null)
 
-        val searchPlate = searchData.findViewById<View>(searchPlateId)
+        val searchPlate = binding.searchData.findViewById<View>(searchPlateId)
         searchPlate?.setBackgroundColor(Color.TRANSPARENT)
-        searchData.setImeOptions(EditorInfo.IME_ACTION_DONE)
-        searchData.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        binding.searchData.setImeOptions(EditorInfo.IME_ACTION_DONE)
+        binding.searchData.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
             }
@@ -41,11 +43,11 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        rvListPahlawan.setLayoutManager(LinearLayoutManager(this))
-        rvListPahlawan.setHasFixedSize(true)
+        binding.rvListPahlawan.setLayoutManager(LinearLayoutManager(this))
+        binding.rvListPahlawan.setHasFixedSize(true)
 
-        fabBackTop.setOnClickListener { view: View? ->
-            rvListPahlawan.smoothScrollToPosition(
+        binding.fabBackTop.setOnClickListener { view: View? ->
+            binding.rvListPahlawan.smoothScrollToPosition(
                 0
             )
         }
@@ -81,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                     modelMain.add(dataApi)
                 }
                 mainAdapter = MainAdapter(this, modelMain)
-                rvListPahlawan.adapter = mainAdapter
+                binding.rvListPahlawan.adapter = mainAdapter
             } catch (e: JSONException) {
                 e.printStackTrace()
             }

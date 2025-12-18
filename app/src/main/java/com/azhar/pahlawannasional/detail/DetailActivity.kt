@@ -10,6 +10,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.azhar.pahlawannasional.R
+import com.azhar.pahlawannasional.databinding.ActivityDetailBinding
 import com.azhar.pahlawannasional.main.ModelMain
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.activity_detail.*
@@ -25,11 +26,13 @@ class DetailActivity : AppCompatActivity() {
     lateinit var lokasimakam: String
     lateinit var history: String
     lateinit var modelMain: ModelMain
+    private lateinit var binding: ActivityDetailBinding
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detail)
+        binding = ActivityDetailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         //set transparent statusbar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -43,7 +46,7 @@ class DetailActivity : AppCompatActivity() {
             window.statusBarColor = Color.TRANSPARENT
         }
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         assert(supportActionBar != null)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -63,17 +66,17 @@ class DetailActivity : AppCompatActivity() {
 
             Glide.with(this)
                 .load(modelMain.image)
-                .into(imagePahlawan)
+                .into(binding.imagePahlawan)
 
-            tvNamaPahlawan.setText(nama)
-            tvNamaLengkap.setText(nama_lengkap)
-            tvKategori.setText(kategori)
-            tvAsal.setText(asal)
-            tvUsia.setText(usia)
-            tvLahir.setText("Lahir : $lahir")
-            tvWafat.setText("Wafat : $gugur")
-            tvMakam.setText("Lokasi Makam : $lokasimakam")
-            tvRiwayat.setText("Riwayat : $history")
+            binding.tvNamaPahlawan.setText(nama)
+            binding.tvNamaLengkap.setText(nama_lengkap)
+            binding.tvKategori.setText(kategori)
+            binding.tvAsal.setText(asal)
+            binding.tvUsia.setText(usia)
+            binding.tvLahir.setText("Lahir : $lahir")
+            binding.tvWafat.setText("Wafat : $gugur")
+            binding.tvMakam.setText("Lokasi Makam : $lokasimakam")
+            binding.tvRiwayat.setText("Riwayat : $history")
         }
     }
 
