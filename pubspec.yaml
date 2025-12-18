@@ -1,0 +1,28 @@
+name: sejarah_pahlawan_indonesia
+description: Aplikasi informasi sejarah pahlawan nasional Indonesia.
+publish_to: "none" # Mencegah pengiriman tidak sengaja ke pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0" # Sesuaikan dengan versi SDK Flutter Anda
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Tambahkan library pendukung di sini jika ada, contoh:
+  # google_fonts: ^6.1.0
+  # cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Jika Anda punya gambar pahlawan, daftarkan foldernya di sini:
+  # assets:
+  #   - assets/images/
