@@ -7,8 +7,10 @@ workflows:
         - google_play
       vars:
         PACKAGE_NAME: "com.azhar.pahlawannasional"
-    scripts:
-      - name: Build Android
-        script: ./gradlew assembleRelease
+scripts:
+  - name: Build Android
+    script: |
+      chmod +x gradlew  # <-- Tambahkan baris ini untuk memberi izin akses
+      ./gradlew assembleRelease
     artifacts:
       - app/build/outputs/**/*.apk
