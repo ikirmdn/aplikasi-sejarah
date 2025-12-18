@@ -1,4 +1,4 @@
-# Konfigurasi Codemagic untuk Aplikasi Sejarah Pahlawan Indonesia
+# Konfigurasi Codemagic untuk Aplikasi Sejarah Pahlawan Indonesia (Android Native)
 workflows:
   android-workflow:
     name: Build Android APK
@@ -6,61 +6,46 @@ workflows:
     
     environment:
       groups:
-        - signing # Pastikan Anda sudah membuat grup 'signing' di Environment Variables
-      flutter: stable
+        - signing # Pastikan variabel keystore Anda ada di sini
+      # Versi Java yang digunakan (biasanya Java 17 untuk proyek Kotlin terbaru)
+      vars:
+        JAVA_VERSION: "17"
 
     scripts:
-      - name: Setup and Build
+      - name: Build Android APK
         script: |
           #!/usr/bin/env bash
-          set -e # Menghentikan script jika ada error di tengah jalan
+          set -e 
 
-          # 1. Cari lokasi pubspec.yaml (Akar proyek Flutter)
-          PUBSPEC_PATH=$(find . -name "pubspec.yaml" | head -n 1)
-          
-          if [ -z "$PUBSPEC_PATH" ]; then
-            echo "ERROR: File pubspec.yaml tidak ditemukan! Pastikan sudah push ke GitHub."
+          # 1. Cari file build.gradle untuk menentukan akar proyek
+          GRADLE_FILE=$(find . -name "build.gradle" | head -n 1)
+          if [ -z "$GRADLE_FILE" ]; then
+            echo "ERROR: File build.gradle tidak ditemukan! Pastikan ini adalah proyek Android."
             exit 1
           fi
 
-          # 2. Pindah ke direktori proyek
-          PROJECT_ROOT=$(dirname "$PUBSPEC_PATH")
-          cd "$PROJECT_ROOT"
-          echo "Bekerja di direktori proyek: $(pwd)"
-
-          # 3. Instal dependensi (Pub Get)
-          flutter packages pub get
-
-          # 4. Cari file utama aplikasi (lib/main.dart)
-          MAIN_FILE=$(find . -name "main.dart" | head -n 1)
-          if [ -z "$MAIN_FILE" ]; then
-            echo "ERROR: File main.dart tidak ditemukan! Periksa folder lib Anda."
-            exit 1
-          fi
-          echo "File utama ditemukan di: $MAIN_FILE"
-
-          # 5. Cari gradlew dan berikan izin eksekusi (Fix Permission Denied)
+          # 2. Cari gradlew dan berikan izin eksekusi
           GRADLEW_PATH=$(find . -name "gradlew" | head -n 1)
-          if [ ! -z "$GRADLEW_PATH" ]; then
-            chmod +x "$GRADLEW_PATH"
-            echo "Izin eksekusi diberikan pada: $GRADLEW_PATH"
-          else
-            echo "WARNING: gradlew tidak ditemukan. Build mungkin gagal jika ini project native."
+          if [ -z "$GRADLEW_PATH" ]; then
+            echo "ERROR: gradlew tidak ditemukan."
+            exit 1
           fi
+          
+          PROJECT_ROOT=$(dirname "$GRADLEW_PATH")
+          cd "$PROJECT_ROOT"
+          chmod +x gradlew
+          echo "Bekerja di direktori: $(pwd)"
 
-          # 6. Proses Build APK
-          # Menggunakan --build-name dan --build-number otomatis dari Codemagic
-          flutter build apk --release \
-            -t "$MAIN_FILE" \
-            --build-name=1.0.$BUILD_NUMBER \
-            --build-number=$BUILD_NUMBER
+          # 3. Jalankan perintah kompilasi Android Native
+          # Ini akan menghasilkan file APK Release
+          ./gradlew assembleRelease
 
     artifacts:
-      # Mengambil file APK di manapun lokasinya berada di dalam folder build
-      - "**/build/app/outputs/flutter-apk/*.apk"
-      - "**/build/app/outputs/bundle/release/*.aab"
+      # Lokasi standar hasil build APK untuk Android Native
+      - "**/build/outputs/apk/release/*.apk"
+      - "**/build/outputs/bundle/release/*.aab"
 
     publishing:
       email:
         recipients:
-          - ficrycahyaramdani@gmail.com      # Kirim notifikasi sukses ke email
+          - ficrycahyaramdani@gmail.com
