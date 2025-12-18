@@ -2,38 +2,43 @@ workflows:
   android-workflow:
     name: Build Android APK
     max_build_duration: 60
-    
     environment:
       groups:
         - signing
-      vars:
-        PACKAGE_NAME: "com.example.app"
       flutter: stable
 
     scripts:
-      - name: Get dependencies
+      - name: Setup and Build
         script: |
-          # Cari di mana pubspec.yaml berada dan masuk ke folder itu
-          PROJECT_ROOT=$(find . -name "pubspec.yaml" -exec dirname {} \;)
-          cd $PROJECT_ROOT
+          # 1. Cari di mana pubspec.yaml berada
+          PUBSPEC_PATH=$(find . -name "pubspec.yaml" | head -n 1)
+          
+          if [ -z "$PUBSPEC_PATH" ]; then
+            echo "ERROR: pubspec.yaml tetap tidak ditemukan di GitHub!"
+            exit 1
+          fi
+
+          # 2. Masuk ke folder proyek
+          PROJECT_ROOT=$(dirname "$PUBSPEC_PATH")
+          cd "$PROJECT_ROOT"
+          echo "Bekerja di direktori: $PROJECT_ROOT"
+
+          # 3. Jalankan perintah Flutter
           flutter packages pub get
 
-      - name: Build Android
-        script: |
-          # Cari folder android untuk menjalankan gradlew
-          ANDROID_DIR=$(find . -name "android" -type d)
-          cd $ANDROID_DIR
-          chmod +x gradlew
-          
-          # Kembali ke root project untuk build flutter
-          cd ..
+          # 4. Cari gradlew dan beri izin
+          GRADLEW_PATH=$(find . -name "gradlew" | head -n 1)
+          if [ ! -z "$GRADLEW_PATH" ]; then
+            chmod +x "$GRADLEW_PATH"
+          fi
+
+          # 5. Build APK
           flutter build apk --release \
             --build-name=1.0.$BUILD_NUMBER \
             --build-number=$BUILD_NUMBER
 
     artifacts:
       - "**/build/app/outputs/flutter-apk/*.apk"
-      - "**/build/app/outputs/bundle/release/*.aab"
 
     publishing:
       email:
