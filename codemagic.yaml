@@ -1,16 +1,30 @@
 workflows:
   android-workflow:
-    name: Android Workflow
-    max_build_duration: 60
+    name: Build Android APK          # Nama yang muncul di dashboard
+    max_build_duration: 60           # Durasi maksimal build (menit)
     environment:
       groups:
-        - google_play
+        - signing                    # Grup variabel tempat Anda menyimpan Keystore & Password
       vars:
-        PACKAGE_NAME: "com.azhar.pahlawannasional"
-scripts:
-  - name: Build Android
-    script: |
-      chmod +x gradlew  # <-- Tambahkan baris ini untuk memberi izin akses
-      ./gradlew assembleRelease
-    artifacts:
-      - app/build/outputs/**/*.apk
+        PACKAGE_NAME: "com.example.app"
+      flutter: stable                # Versi Flutter (jika menggunakan Flutter)
+    
+    scripts:
+      - name: Get dependencies
+        script: | 
+          flutter packages pub get   # Mengambil library yang diperlukan
+      
+      - name: Build Android
+        script: | 
+          chmod +x gradlew           # Memberikan izin akses (Solusi Error 126)
+          flutter build apk --release --build-name=1.0.$BUILD_NUMBER --build-number=$BUILD_NUMBER
+          # ATAU jika Native gunakan: ./gradlew assembleRelease
+
+    artifacts:                       # BAGIAN PALING PENTING: Agar file muncul untuk di-download
+      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/bundle/release/*.aab
+
+    publishing:
+      email:
+        recipients:
+          - ficrycahyaramdani@gmail.com      # Kirim notifikasi sukses ke email
